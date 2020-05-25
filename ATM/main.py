@@ -1,4 +1,5 @@
 import os
+import time
 
 class ATM:
 
@@ -19,7 +20,7 @@ class ATM:
     def withdraw(self):
         self.clear()
         print(f"Account balance: {self.account_balance}")
-        withdrawal_amount = float(input("Amount to withdraw: "))
+        withdrawal_amount = abs(float(input("Amount to withdraw: ")))
         remaining_bal = self.account_balance - withdrawal_amount
         if remaining_bal < 0:
             print("Insufficient funds, soz mate")
@@ -79,8 +80,34 @@ class ATM:
         self.mainMenu()
 
     def changePin(self):
-        print("Change Pin")
+        self.clear()
+        # Check old pin first
+        
+        counter = 0
+        while counter < 3:
+            old_pin = input("Please enter current PIN:")
+            if old_pin == self.account_pin:
+                print("PIN entered successfully")
+                break
+            else:
+                counter += 1
+                print("Incorrect PIN, try again")
+                if counter == 3:
+                    print("BYEEEEE")
+                    time.sleep(2)
+                    self.mainMenu()
+                continue
 
+        # Update to new pin
+        new_pin = input("Please enter new PIN:")
+        confirm_pin = input("Re-enter new PIN:")
+  
+        if new_pin == confirm_pin:
+            self.account_pin = new_pin
+        else:
+            print("PIN numbers don't match!")
+            input("Press any key to continue")
+            self.changePin()
         #Go back to menu
         self.mainMenu()
 
@@ -121,6 +148,9 @@ class ATM:
             else:
                 counter += 1
                 print("Incorrect PIN, try again")
+                if counter == 3:
+                    print("BYEEEEE")
+                    exit()
                 continue
 
 atm = ATM()
