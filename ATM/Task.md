@@ -72,3 +72,13 @@ Create a command line interface that mimics a basic ATM
 
 ### Frontend
 - Create a web frontend that uses the bank API service to perform the actions. This can be HTML, CSS and flask or another framework such as ReactJS
+
+
+
+
+## Bank
+- Stores all the accounts 
+- Performs the actions on the accounts
+
+## ATM
+- Provides the user interface and validation
