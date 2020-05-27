@@ -75,7 +75,6 @@ Create a command line interface that mimics a basic ATM
 
 
 
-
 ## Bank
 - Stores all the accounts 
 - Performs the actions on the accounts

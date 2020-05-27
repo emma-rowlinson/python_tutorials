@@ -5,50 +5,7 @@ from bank import Bank # import the Bank class
 
 class ATM:
 
-    accounts = {
-        "5678": {
-            "account_num": "5678",
-            "balance": float(250.00),
-            "pin": "1234",
-            "name": "Kyle"
-        },
-        "9876": {
-            "account_num": "9876",
-            "balance": float(300.00),
-            "pin": "1997",
-            "name": "Emma"
-        }
-    }
-
-    account_pin = "1234"
-    account_balance = float(250.00)
     account_num = ""
-
-    def getAccount(self):
-        return self.accounts.get(self.account_num)
-
-    def updateBalance(self, newBalance):
-        account = self.getAccount()
-        account['balance'] = newBalance
-
-    def getAccountByNumber(self, account_num):
-        return self.accounts.get(account_num)
-
-    def performWithdrawal(self, account_num, amount):
-        account = self.getAccountByNumber(account_num)
-        account['balance'] -= amount
-
-    def updatePin(self, newPin):
-        account = self.getAccount()
-        account['pin'] = newPin
-
-    def performTransfer(self, to_acc_num, amount): 
-        # Add to destination account
-        to_acc = self.accounts.get(to_acc_num)
-        to_acc['balance'] += amount
-        # Subtract from current account
-        from_acc = self.getAccount()
-        from_acc['balance'] -= amount
 
     def clear(self):
         os.system('clear') # Mac # clears terminal
@@ -60,16 +17,15 @@ class ATM:
 
     def balance(self):
         self.clear()
-        account = self.getAccount()
-        print(f"Current balance: {account.get('balance')}")
+        balance = self.bank.getBalance(self.account_num)
+        print(f"Current balance: {balance}")
         input("Press any key to return to main menu:")
         #Go back to menu
         self.mainMenu()
 
     def withdraw(self):
         self.clear()
-        account = self.getAccount()
-        bal = account.get('balance')
+        bal = self.bank.getBalance(self.account_num)
         print(f"Account balance: {bal}")
         withdrawal_amount = abs(float(input("Amount to withdraw: ")))
         remaining_bal = bal - withdrawal_amount
@@ -86,7 +42,7 @@ class ATM:
 
         confirm = input("").upper()
         if confirm == "Y":
-            self.updateBalance(remaining_bal)
+            self.bank.performWithdrawal(self.account_num, withdrawal_amount)
             print(f"Please take your £{withdrawal_amount}!")
         elif confirm == "N":
             self.withdraw()
@@ -100,8 +56,7 @@ class ATM:
 
     def deposit(self):
         self.clear()
-        account = self.getAccount()
-        bal = account.get('balance')
+        bal = self.bank.getBalance(self.account_num)
         print(f"Account balance: {bal}")
         deposit_amount = abs(float(input("Amount to deposit: ")))
         new_bal = bal + deposit_amount
@@ -114,7 +69,7 @@ class ATM:
 
         confirm = input("").upper()
         if confirm == "Y":
-            self.updateBalance(new_bal)
+            self.bank.performDeposit(self.account_num, deposit_amount)
             print(f"Please insert your £{deposit_amount}!")
         elif confirm == "N":
             self.withdraw()
@@ -137,11 +92,10 @@ class ATM:
 
     def transfer(self):
         self.clear()
-        account = self.getAccount()
-        bal = account.get('balance')
+        bal = self.bank.getBalance(self.account_num)
         print(f"Balance in current account is £{bal}")
         to_acc_num = input("Account Num to transfer money to: ")
-        check = self.accounts.get(to_acc_num, "Invalid")
+        check = self.bank.getAccount(to_acc_num)
         if check == "Invalid":
             print("Invalid account, please try again!")
             self.transfer()
@@ -156,7 +110,7 @@ class ATM:
 
         confirm = input("").upper()
         if confirm == "Y":
-            self.performTransfer(to_acc_num, transfer_amount)
+            self.bank.performTransfer(self.account_num, to_acc_num, transfer_amount)
             print(f"Your transfer of £{transfer_amount} has been completed!")
         elif confirm == "N":
             self.transfer()
@@ -174,7 +128,7 @@ class ATM:
         counter = 0
         while counter < 3:
             old_pin = input("Please enter current PIN:")
-            if old_pin == self.getAccount().get('pin'):
+            if old_pin == self.bank.getAccount(self.account_num).get('pin'):
                 print("PIN entered successfully")
                 break
             else:
@@ -191,7 +145,7 @@ class ATM:
         confirm_pin = input("Re-enter new PIN:")
   
         if new_pin == confirm_pin:
-            self.updatePin(new_pin)
+            self.bank.updatePin(self.account_num, new_pin)
         else:
             print("PIN numbers don't match!")
             input("Press any key to continue")
@@ -230,7 +184,8 @@ class ATM:
         self.clear()
         self.account_num = input("Enter your account number: ")
         # Get account from dictionary
-        account = self.accounts.get(self.account_num, "Invalid") # this is a dict
+        account = self.bank.getAccount(self.account_num)
+        # self.accounts.get(self.account_num, "Invalid") # this is a dict
         # Check if account is null
         if account == "Invalid":
             print("Invalid account number, please try again")
@@ -253,5 +208,10 @@ class ATM:
                     exit()
                 continue
 
+
+bank = Bank()
+
 atm = ATM()
+atm.bank = bank
+
 atm.login()
