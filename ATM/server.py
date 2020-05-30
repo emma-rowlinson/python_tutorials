@@ -12,18 +12,18 @@ bank = Bank()
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/account')
+@app.route('/account', methods=["POST"])
 def account():
-    return bank.getAccount("")
+    json = request.get_json()
 
-@app.route('/balance') # route is a function in the app module
-def balance():
-    balance = bank.getBalance("")
-    return f"Your balance is £{balance}"
+    account_num = json["account_num"]
 
-@app.route('/post', methods=["POST"]) ## This is a decorator, it gives our function(post) some extra information
+    return bank.getAccount(account_num)
+
+
+@app.route('/balance', methods=["POST"]) ## This is a decorator, it gives our function(balance) some extra information
 # methods=["POST"] means it can take post requests, default is get requests
-def post(): 
+def balance(): 
     # request is provided by the decorator - https://flask.palletsprojects.com/en/1.1.x/api/?highlight=request#flask.request
     json = request.get_json()
 
@@ -31,6 +31,43 @@ def post():
 
     balance = bank.getBalance(account_num)
     return f"Your balance is £{balance}"
+
+
+@app.route('/deposit', methods=["POST"])
+def deposit():
+    json = request.get_json()
+    account_num = json["account_num"]
+    amount = json["amount"]
+    bank.performDeposit(account_num, amount)
+    balance = bank.getBalance(account_num)
+    return f"Your balance is £{balance}"
+
+@app.route('/withdraw', methods=["POST"])
+def withdraw():
+    json = request.get_json()
+    account_num = json["account_num"]
+    amount = json["amount"]
+    bank.performWithdrawal(account_num, amount)
+    balance = bank.getBalance(account_num)
+    return f"Your balance is £{balance}"
+
+@app.route('/transfer', methods=["POST"])
+def transfer():
+    json = request.get_json()
+    to_account_num = json["to_acc"]
+    from_account_num = json["from_acc"]
+    amount = json["amount"]
+    bank.performTransfer(from_account_num, to_account_num, amount)
+    return "Transfer Successful"
+
+@app.route('/updatepin', methods=["POST"])
+def updatepin():
+    json = request.get_json()
+    account_num = json["account_num"]
+    new_pin = json["new_pin"]
+    bank.updatePin(account_num, new_pin)
+    return "PIN Updated" 
+
 
 
 
